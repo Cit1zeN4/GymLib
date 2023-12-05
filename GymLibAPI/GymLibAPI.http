@@ -1,6 +1,0 @@
-@GymLibAPI_HostAddress = http://localhost:5003
-
-GET {{GymLibAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
