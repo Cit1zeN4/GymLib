@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymLibAPI.Models", "GymLibA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymLibAPI.Business", "GymLibAPI.Business\GymLibAPI.Business.csproj", "{83AFE5CC-FCA0-4228-AA16-C9D5CDFDA56D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymLibAPI.Data", "GymLibAPI.Data\GymLibAPI.Data.csproj", "{B4718AE2-863C-4804-8CAD-70D670189692}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{83AFE5CC-FCA0-4228-AA16-C9D5CDFDA56D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83AFE5CC-FCA0-4228-AA16-C9D5CDFDA56D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83AFE5CC-FCA0-4228-AA16-C9D5CDFDA56D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4718AE2-863C-4804-8CAD-70D670189692}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4718AE2-863C-4804-8CAD-70D670189692}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4718AE2-863C-4804-8CAD-70D670189692}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4718AE2-863C-4804-8CAD-70D670189692}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
