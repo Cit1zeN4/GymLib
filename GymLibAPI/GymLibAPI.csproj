@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
           <PrivateAssets>all</PrivateAssets>
@@ -19,11 +20,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\" />
+      <ProjectReference Include="..\GymLibAPI.Data\GymLibAPI.Data.csproj" />
     </ItemGroup>
 
+
     <ItemGroup>
-      <ProjectReference Include="..\GymLibAPI.Data\GymLibAPI.Data.csproj" />
+      <Folder Include="Controllers\" />
     </ItemGroup>
 
 </Project>
