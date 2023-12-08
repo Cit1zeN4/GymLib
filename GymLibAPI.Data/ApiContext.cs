@@ -1,4 +1,5 @@
 ﻿using GymLibAPI.Models.Exercise;
+using GymLibAPI.Models.Product;
 using GymLibAPI.Models.Role;
 using GymLibAPI.Models.Sleep;
 using GymLibAPI.Models.User;
@@ -17,4 +18,5 @@ public class ApiContext : IdentityDbContext<UserEntity, RoleEntity, int>
     
     public DbSet<ExerciseEntity> Exercise { get; set; }
     public DbSet<SleepEntity> Sleep { get; set; }
+    public DbSet<ProductEntity> Products { get; set; }
 }

@@ -5,8 +5,10 @@ using System.Text;
 using CsvHelper;
 using CsvHelper.Configuration;
 using GymLibAPI.Models.Exercise;
+using GymLibAPI.Models.Product;
 using GymLibAPI.Models.Role;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace GymLibAPI.Data;
 
@@ -17,6 +19,7 @@ public static class ApiContextInitializer
         using var context = provider.GetRequiredService<ApiContext>();
         InitRoles(context);
         InitExercises(context);
+        InitProducts(context);
     }
 
     private static void InitRoles(ApiContext context)
@@ -63,6 +66,21 @@ public static class ApiContextInitializer
                 context.Exercise.AddRange(exercises);
                 context.SaveChanges();
             }
+        }
+    }
+
+    private static void InitProducts(ApiContext context)
+    {
+        if (!context.Products.Any())
+        {
+            var buildDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var path = buildDir + @"\SeedData\products.json";
+
+            var text = File.ReadAllText(path, Encoding.UTF8);
+            var products = JsonConvert.DeserializeObject<List<ProductEntity>>(text);
+            
+            context.Products.AddRange(products);
+            context.SaveChanges();
         }
     }
 }
