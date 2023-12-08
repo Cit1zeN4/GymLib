@@ -1,5 +1,6 @@
 ﻿using GymLibAPI.Models.Exercise;
 using GymLibAPI.Models.Role;
+using GymLibAPI.Models.Sleep;
 using GymLibAPI.Models.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -15,4 +16,5 @@ public class ApiContext : IdentityDbContext<UserEntity, RoleEntity, int>
     }
     
     public DbSet<ExerciseEntity> Exercise { get; set; }
+    public DbSet<SleepEntity> Sleep { get; set; }
 }
