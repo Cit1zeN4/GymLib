@@ -52,4 +52,6 @@ app.UseEndpoints(endpoints =>
 
 app.MapIdentityApi<UserEntity>();
 app.UseHttpsRedirection();
+using var scope = app.Services.CreateScope();
+ApiContextInitializer.Init(scope.ServiceProvider);
 app.Run();

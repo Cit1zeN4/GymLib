@@ -1,4 +1,5 @@
-﻿using GymLibAPI.Models.Role;
+﻿using GymLibAPI.Models.Exercise;
+using GymLibAPI.Models.Role;
 using GymLibAPI.Models.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -8,5 +9,10 @@ namespace GymLibAPI.Data;
 
 public class ApiContext : IdentityDbContext<UserEntity, RoleEntity, int>
 {
-    public ApiContext(DbContextOptions<ApiContext> options) : base(options) { }
+    public ApiContext(DbContextOptions<ApiContext> options) : base(options)
+    {
+        Database.Migrate();
+    }
+    
+    public DbSet<ExerciseEntity> Exercise { get; set; }
 }
