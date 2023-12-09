@@ -10,4 +10,5 @@ public class ArticleEntity
     public DateTimeOffset CreatedAt { get; set; }
     public int UserId { get; set; }
     public UserEntity User { get; set; }
+    public int Views { get; set; }
 }
