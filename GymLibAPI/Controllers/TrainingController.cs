@@ -1,5 +1,6 @@
 using GymLibAPI.Data;
 using GymLibAPI.Infrastructure;
+using GymLibAPI.Models;
 using GymLibAPI.Models.Training.Dto;
 using GymLibAPI.Models.Training.Request;
 using GymLibAPI.Models.Training.Response;
@@ -41,7 +42,7 @@ public class TrainingController(IServiceScopeFactory serviceScopeFactory) : Cont
             return NotFound($"Тернировка с Id: {id} не найдена");
         if (training.AuthorId != userId && !training.IsPublic)
             return BadRequest($"Тренировка не является общедоступной");
-        
+
         return Ok(training);
     }
 
@@ -51,12 +52,12 @@ public class TrainingController(IServiceScopeFactory serviceScopeFactory) : Cont
     {
         using var scope = serviceScopeFactory.CreateScope();
         await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
-        
+
         var training = request.GetTrainingEntity();
         training.UserId = User.GetUserId();
         context.Trainings.Add(training);
         await context.SaveChangesAsync();
-        
+
         return Ok();
     }
 
@@ -67,10 +68,10 @@ public class TrainingController(IServiceScopeFactory serviceScopeFactory) : Cont
         using var scope = serviceScopeFactory.CreateScope();
         await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
         var userId = User.GetUserId();
-        
+
         var training = request.GetTrainingEntity();
         var entity = await context.Trainings.FirstOrDefaultAsync(x => x.Id == training.Id);
-        
+
         if (entity == null)
             return NotFound($"Тренировка с Id {training.Id} не найдена");
         if (entity.UserId != userId)
@@ -79,7 +80,7 @@ public class TrainingController(IServiceScopeFactory serviceScopeFactory) : Cont
         training.UserId = userId;
         context.Trainings.Update(training);
         await context.SaveChangesAsync();
-        
+
         return Ok();
     }
 
@@ -92,20 +93,21 @@ public class TrainingController(IServiceScopeFactory serviceScopeFactory) : Cont
         var userId = User.GetUserId();
 
         var training = await context.Trainings.FirstOrDefaultAsync(x => x.Id == id);
-        if(training == null)
+        if (training == null)
             return BadRequest($"Тренировка с Id {training.Id} не найдена");
-        if(training.UserId != userId)
+        if (training.UserId != userId)
             return BadRequest("Только автор тренировки может ее удалить");
-        
+
         context.Remove(training);
         await context.SaveChangesAsync();
         return Ok();
     }
-    
+
     [Authorize]
     [AllowAnonymous]
     [HttpGet("user-trainings")]
-    public async Task<ActionResult<TrainingShortResponse>> GetTrainings(int userId, int skip, int take)
+    public async Task<ActionResult<ResponseData<TrainingSetShortDto>>> GetTrainings(int userId, int skip = 0,
+        int take = 0)
     {
         using var scope = serviceScopeFactory.CreateScope();
         await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
@@ -116,11 +118,11 @@ public class TrainingController(IServiceScopeFactory serviceScopeFactory) : Cont
             query = query.Where(x => x.IsPublic);
 
         var totalCount = await query.CountAsync();
-        
+
         query = query.Skip(skip);
         if (take > 0)
             query = query.Take(take);
-        
+
         var list = await query.ToListAsync();
         var trainings = list.Select(x => new TrainingSetShortDto
         {
@@ -128,12 +130,12 @@ public class TrainingController(IServiceScopeFactory serviceScopeFactory) : Cont
             Name = x.Name
         }).ToList();
 
-        var response = new TrainingShortResponse
+        var response = new ResponseData<TrainingSetShortDto>()
         {
             TotalCount = totalCount,
-            Trainings = trainings
+            Records = trainings
         };
-        
+
         return Ok(response);
     }
 }
