@@ -3,6 +3,7 @@ using System;
 using GymLibAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GymLibAPI.Data.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    partial class ApiContextModelSnapshot : ModelSnapshot
+    [Migration("20231210115917_Food")]
+    partial class Food
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace GymLibAPI.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("FoodEntityProductEntity", b =>
-                {
-                    b.Property<int>("FoodsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProductsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("FoodsId", "ProductsId");
-
-                    b.HasIndex("ProductsId");
-
-                    b.ToTable("FoodEntityProductEntity");
-                });
 
             modelBuilder.Entity("GymLibAPI.Models.Article.ArticleEntity", b =>
                 {
@@ -106,7 +94,7 @@ namespace GymLibAPI.Data.Migrations
                     b.ToTable("Exercise");
                 });
 
-            modelBuilder.Entity("GymLibAPI.Models.Food.FoodEntity", b =>
+            modelBuilder.Entity("GymLibAPI.Models.Meal.FoodEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -139,11 +127,12 @@ namespace GymLibAPI.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<float>("Carbohydrates")
-                        .HasColumnType("real");
+                    b.Property<string>("Bgu")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<float>("Fats")
-                        .HasColumnType("real");
+                    b.Property<int?>("FoodEntityId")
+                        .HasColumnType("integer");
 
                     b.Property<float>("Kcal")
                         .HasColumnType("real");
@@ -152,10 +141,9 @@ namespace GymLibAPI.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<float>("Proteins")
-                        .HasColumnType("real");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("FoodEntityId");
 
                     b.ToTable("Products");
                 });
@@ -456,21 +444,6 @@ namespace GymLibAPI.Data.Migrations
                     b.ToTable("UserEntityUserEntity");
                 });
 
-            modelBuilder.Entity("FoodEntityProductEntity", b =>
-                {
-                    b.HasOne("GymLibAPI.Models.Food.FoodEntity", null)
-                        .WithMany()
-                        .HasForeignKey("FoodsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GymLibAPI.Models.Product.ProductEntity", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("GymLibAPI.Models.Article.ArticleEntity", b =>
                 {
                     b.HasOne("GymLibAPI.Models.User.UserEntity", "User")
@@ -482,7 +455,7 @@ namespace GymLibAPI.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("GymLibAPI.Models.Food.FoodEntity", b =>
+            modelBuilder.Entity("GymLibAPI.Models.Meal.FoodEntity", b =>
                 {
                     b.HasOne("GymLibAPI.Models.User.UserEntity", "User")
                         .WithMany()
@@ -491,6 +464,13 @@ namespace GymLibAPI.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GymLibAPI.Models.Product.ProductEntity", b =>
+                {
+                    b.HasOne("GymLibAPI.Models.Meal.FoodEntity", null)
+                        .WithMany("Products")
+                        .HasForeignKey("FoodEntityId");
                 });
 
             modelBuilder.Entity("GymLibAPI.Models.Sleep.SleepEntity", b =>
@@ -594,6 +574,11 @@ namespace GymLibAPI.Data.Migrations
                         .HasForeignKey("FollowingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("GymLibAPI.Models.Meal.FoodEntity", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("GymLibAPI.Models.Training.TrainingEntity", b =>

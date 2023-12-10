@@ -77,10 +77,12 @@ public static class ApiContextInitializer
             var path = buildDir + @"\SeedData\products.json";
 
             var text = File.ReadAllText(path, Encoding.UTF8);
-            var products = JsonConvert.DeserializeObject<List<ProductEntity>>(text);
-            
-            context.Products.AddRange(products);
-            context.SaveChanges();
+            var products = JsonConvert.DeserializeObject<List<Product>>(text);
+            if (products != null)
+            {
+                context.Products.AddRange(products.Select(x => new ProductEntity(x)));
+                context.SaveChanges();
+            }
         }
     }
 }
