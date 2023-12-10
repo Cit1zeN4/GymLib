@@ -26,12 +26,39 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
         var userId = User.GetUserId();
 
         var food = await context.Food.FirstOrDefaultAsync(x => x.Id == id);
-        
+
         if (food == null)
             return NotFound($"Данные о питании с Id {id} не найдены");
         if (food.UserId != userId)
             return BadRequest("Данные о питании может получить только владелец");
-        
+
+        var response = new FoodResponse(food);
+        return Ok(response);
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<FoodResponse>> CreateFood([FromBody] CreateFoodRequest request)
+    {
+        using var scope = serviceScopeFactory.CreateScope();
+        await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
+        var userId = User.GetUserId();
+
+        var products = await context.Products
+            .Where(x => request.Products.Contains(x.Id))
+            .ToListAsync();
+
+        var food = new FoodEntity
+        {
+            Name = request.Name,
+            Date = request.Date,
+            UserId = userId,
+            Products = products
+        };
+
+        context.Food.Add(food);
+        await context.SaveChangesAsync();
+
         var response = new FoodResponse(food);
         return Ok(response);
     }
@@ -43,9 +70,9 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
         using var scope = serviceScopeFactory.CreateScope();
         await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
         var userId = User.GetUserId();
-        
+
         var food = await context.Food.FirstOrDefaultAsync(x => x.Id == id);
-        
+
         if (food == null)
             return NotFound($"Данные о питании с Id {id} не найдены");
         if (food.UserId != userId)
@@ -56,7 +83,7 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
 
         return Ok();
     }
-    
+
     [HttpPost("product-list")]
     public async Task<ActionResult<ResponseData<ProductEntity>>> GetProducts([FromBody] ProductListRequest request)
     {
@@ -114,7 +141,7 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
         using var scope = serviceScopeFactory.CreateScope();
         await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
         var userId = User.GetUserId();
-        
+
         var query = context.Food.Where(x => x.UserId == userId).Select(x => new FoodShortDto
         {
             Id = x.Id,
@@ -125,7 +152,7 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
             Carbohydrates = x.Products.Sum(y => y.Carbohydrates),
             Kcal = x.Products.Sum(y => y.Kcal)
         });
-        
+
         if (!string.IsNullOrEmpty(request.Search))
             query = query.Where(x => x.Name.ToLower().Contains(request.Search.ToLower()));
         if (request.DateStart.HasValue)
@@ -137,7 +164,7 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
 
         query = request.OrderBy switch
         {
-            FoodOrderType.Id => request.OrderDirection == OrderDirectionType.ASC 
+            FoodOrderType.Id => request.OrderDirection == OrderDirectionType.ASC
                 ? query.OrderBy(x => x.Id)
                 : query.OrderByDescending(x => x.Id),
             FoodOrderType.Name => request.OrderDirection == OrderDirectionType.ASC
@@ -148,7 +175,7 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
                 : query.OrderByDescending(x => x.Date),
             _ => query
         };
-        
+
         query = query.Skip(request.Skip);
         if (request.Take > 0)
             query = query.Take(request.Take);
