@@ -35,6 +35,27 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
         var response = new FoodResponse(food);
         return Ok(response);
     }
+
+    [Authorize]
+    [HttpDelete]
+    public async Task<ActionResult> DeleteFood(int id)
+    {
+        using var scope = serviceScopeFactory.CreateScope();
+        await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
+        var userId = User.GetUserId();
+        
+        var food = await context.Food.FirstOrDefaultAsync(x => x.Id == id);
+        
+        if (food == null)
+            return NotFound($"Данные о питании с Id {id} не найдены");
+        if (food.UserId != userId)
+            return BadRequest("Данные о питании может получить только владелец");
+
+        context.Food.Remove(food);
+        await context.SaveChangesAsync();
+
+        return Ok();
+    }
     
     [HttpPost("product-list")]
     public async Task<ActionResult<ResponseData<ProductEntity>>> GetProducts([FromBody] ProductListRequest request)
