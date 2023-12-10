@@ -20,7 +20,7 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
         var query = context.Products.Select(x => x);
 
         if (!string.IsNullOrEmpty(request.Search))
-            query = query.Where(x => x.Name.Contains(request.Search));
+            query = query.Where(x => x.Name.ToLower().Contains(request.Search.ToLower()));
 
         var totalCount = await query.CountAsync();
 
