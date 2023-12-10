@@ -4,6 +4,7 @@ using GymLibAPI.Models;
 using GymLibAPI.Models.Food;
 using GymLibAPI.Models.Food.Dto;
 using GymLibAPI.Models.Food.Request;
+using GymLibAPI.Models.Food.Response;
 using GymLibAPI.Models.Product;
 using GymLibAPI.Models.Product.Request;
 using Microsoft.AspNetCore.Authorization;
@@ -16,6 +17,25 @@ namespace GymLibAPI.Controllers;
 [Route("[controller]")]
 public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controller
 {
+    [Authorize]
+    [HttpGet]
+    public async Task<ActionResult<FoodResponse>> GetFood(int id)
+    {
+        using var scope = serviceScopeFactory.CreateScope();
+        await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
+        var userId = User.GetUserId();
+
+        var food = await context.Food.FirstOrDefaultAsync(x => x.Id == id);
+        
+        if (food == null)
+            return NotFound($"Данные о питании с Id {id} не найдены");
+        if (food.UserId != userId)
+            return BadRequest("Данные о питании может получить только владелец");
+        
+        var response = new FoodResponse(food);
+        return Ok(response);
+    }
+    
     [HttpPost("product-list")]
     public async Task<ActionResult<ResponseData<ProductEntity>>> GetProducts([FromBody] ProductListRequest request)
     {

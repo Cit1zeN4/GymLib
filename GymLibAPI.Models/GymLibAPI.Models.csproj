@@ -36,6 +36,15 @@
 
 
 
+
+
+
+
+    <ItemGroup>
+      <Folder Include="Product\Dto\" />
+    </ItemGroup>
+
+
     </ItemGroup>
 
 
