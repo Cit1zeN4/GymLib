@@ -58,7 +58,7 @@ public static class ApiContextInitializer
                 var config = new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
                     Encoding = Encoding.UTF8,
-                    Delimiter = ";"
+                    Delimiter = ","
                 };
                 
                 CsvReader csvReader = new CsvReader(reader, config);
