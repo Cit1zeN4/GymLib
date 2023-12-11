@@ -132,7 +132,7 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
         using var scope = serviceScopeFactory.CreateScope();
         await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
 
-        var query = context.Products.Select(x => x);
+        var query = context.Products.AsQueryable();
 
         if (!string.IsNullOrEmpty(request.Search))
             query = query.Where(x => x.Name.ToLower().Contains(request.Search.ToLower()));
