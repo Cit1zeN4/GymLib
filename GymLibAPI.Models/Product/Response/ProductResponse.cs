@@ -2,16 +2,17 @@ namespace GymLibAPI.Models.Product.Response;
 
 public class ProductResponse
 {
-    public ProductResponse(ProductEntity? entity = null)
+    public ProductResponse(ProductWeightEntity? entity = null)
     {
         if (entity != null)
         {
-            Id = entity.Id;
-            Name = entity.Name;
-            Proteins = entity.Proteins;
-            Fats = entity.Fats;
-            Carbohydrates = entity.Carbohydrates;
-            Kcal = entity.Kcal;
+            Id = entity.Product.Id;
+            Name = entity.Product.Name;
+            Proteins = entity.Product.Proteins;
+            Fats = entity.Product.Fats;
+            Carbohydrates = entity.Product.Carbohydrates;
+            Kcal = entity.Product.Kcal;
+            Weight = entity.Weight;
         }
     }
 
@@ -21,4 +22,5 @@ public class ProductResponse
     public float Fats { get; set; }
     public float Carbohydrates { get; set; }
     public float Kcal { get; set; }
+    public float Weight { get; set; }
 }

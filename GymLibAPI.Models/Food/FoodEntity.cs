@@ -8,7 +8,7 @@ public class FoodEntity
     public int Id { get; set; }
     public string Name { get; set; }
     public DateTimeOffset Date { get; set; }
-    public List<ProductEntity> Products { get; set; }
+    public List<ProductWeightEntity> Products { get; set; }
     public int UserId { get; set; }
     public UserEntity User { get; set; }
 }

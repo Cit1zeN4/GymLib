@@ -25,7 +25,9 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
         await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
         var userId = User.GetUserId();
 
-        var food = await context.Food.FirstOrDefaultAsync(x => x.Id == id);
+        var food = await context.Food
+            .Include(x => x.Products)
+            .FirstOrDefaultAsync(x => x.Id == id);
 
         if (food == null)
             return NotFound($"Данные о питании с Id {id} не найдены");
@@ -45,7 +47,13 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
         var userId = User.GetUserId();
 
         var products = await context.Products
-            .Where(x => request.Products.Contains(x.Id))
+            .Where(x => request.Products.Select(y => y.ProductId).Contains(x.Id))
+            .Select(x => new ProductWeightEntity
+            {
+                ProductId = x.Id,
+                Product = x,
+                Weight = request.Products.FirstOrDefault(y => y.ProductId == x.Id)!.Weight 
+            })
             .ToListAsync();
 
         var food = new FoodEntity
@@ -61,6 +69,40 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
 
         var response = new FoodResponse(food);
         return Ok(response);
+    }
+
+    [Authorize]
+    [HttpPut]
+    public async Task<ActionResult> UpdateFood(int id, [FromBody] CreateFoodRequest request)
+    {
+        using var scope = serviceScopeFactory.CreateScope();
+        await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
+        var userId = User.GetUserId();
+
+        var dbFood = await context.Food.Select(x => new { Id = x.Id, UserId = x.UserId })
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (dbFood == null)
+            return NotFound($"Данные питания с Id {id} не найдены");
+        if (dbFood.UserId != userId)
+            return BadRequest("Вы можете редактировать только свои данные");
+
+        var food = new FoodEntity
+        {
+            Id = id,
+            Name = request.Name,
+            Date = request.Date,
+            UserId = userId,
+            Products = request.Products.Select(x => new ProductWeightEntity
+            {
+                ProductId = x.ProductId,
+                Weight = x.Weight
+            }).ToList()
+        };
+
+        context.Food.Update(food);
+        await context.SaveChangesAsync();
+        return Ok();
     }
 
     [Authorize]
@@ -147,10 +189,10 @@ public class FoodController(IServiceScopeFactory serviceScopeFactory) : Controll
             Id = x.Id,
             Name = x.Name,
             Date = x.Date,
-            Proteins = x.Products.Sum(y => y.Proteins),
-            Fats = x.Products.Sum(y => y.Fats),
-            Carbohydrates = x.Products.Sum(y => y.Carbohydrates),
-            Kcal = x.Products.Sum(y => y.Kcal)
+            Proteins = x.Products.Sum(y => y.Product.Proteins),
+            Fats = x.Products.Sum(y => y.Product.Fats),
+            Carbohydrates = x.Products.Sum(y => y.Product.Carbohydrates),
+            Kcal = x.Products.Sum(y => y.Product.Kcal)
         });
 
         if (!string.IsNullOrEmpty(request.Search))

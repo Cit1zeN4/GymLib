@@ -22,7 +22,9 @@ public class ApiContext : IdentityDbContext<UserEntity, RoleEntity, int>
     public DbSet<SleepEntity> Sleep { get; set; }
     public DbSet<FoodEntity> Food { get; set;}
     public DbSet<ProductEntity> Products { get; set; }
+    public DbSet<ProductWeightEntity> ProductWeight { get; set; }
     public DbSet<ArticleEntity> Articles { get; set; }
     public DbSet<TrainingEntity> Trainings { get; set; }
     public DbSet<TrainingSetEnitity> TrainingSets { get; set; }
+    
 }
