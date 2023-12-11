@@ -15,7 +15,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="7.0.12" />
     </ItemGroup>
 
@@ -24,12 +24,6 @@
       <ProjectReference Include="..\GymLibAPI.Data\GymLibAPI.Data.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Swagger\v1\" />
-    </ItemGroup>
 
-    <Target Name="CreateSwaggerJson" AfterTargets="Build" Condition="$(Configuration)=='Debug'">
-        <Exec Command="dotnet swagger tofile --output ./Swagger/v1/swagger.json $(OutputPath)$(AssemblyName).dll v1" WorkingDirectory="$(ProjectDir)" />
-    </Target>
 
 </Project>
