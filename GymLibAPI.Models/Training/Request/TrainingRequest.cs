@@ -2,7 +2,6 @@ namespace GymLibAPI.Models.Training.Request;
 
 public class TrainingRequest
 {
-    public int? Id { get; set; }
     public string Name { get; set; }
     public bool IsPublic { get; set; }
     public List<TrainingSetRequest> Sets { get; set; }
@@ -10,7 +9,6 @@ public class TrainingRequest
     public TrainingEntity GetTrainingEntity()
     {
         var training = new TrainingEntity();
-        training.Id = Id.GetValueOrDefault();
         training.Name = Name;
         training.IsPublic = IsPublic;
         training.Sets = Sets.Select(x => new TrainingSetEnitity

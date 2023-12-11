@@ -63,13 +63,14 @@ public class TrainingController(IServiceScopeFactory serviceScopeFactory) : Cont
 
     [Authorize]
     [HttpPut]
-    public async Task<ActionResult> UpdateTraining([FromBody] TrainingRequest request)
+    public async Task<ActionResult> UpdateTraining(int id, [FromBody] TrainingRequest request)
     {
         using var scope = serviceScopeFactory.CreateScope();
         await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
         var userId = User.GetUserId();
 
         var training = request.GetTrainingEntity();
+        training.Id = id;
         var entity = await context.Trainings.FirstOrDefaultAsync(x => x.Id == training.Id);
 
         if (entity == null)
