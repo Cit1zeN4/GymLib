@@ -105,7 +105,7 @@ public class StatController(IServiceScopeFactory serviceScopeFactory) : Controll
     }
 
     [Authorize]
-    [HttpGet]
+    [HttpGet("sleep")]
     public async Task<ActionResult<SleepStat>> GetSleepStat()
     {
         using var scope = serviceScopeFactory.CreateScope();

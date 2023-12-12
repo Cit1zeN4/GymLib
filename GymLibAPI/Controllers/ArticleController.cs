@@ -88,7 +88,7 @@ public class ArticleController(IServiceScopeFactory serviceScopeFactory) : Contr
     }
 
     [Authorize]
-    [HttpPost]
+    [HttpPut]
     public async Task<ActionResult> UpdateArticle(int id, [FromBody] ArticleRequest request)
     {
         using var scope = serviceScopeFactory.CreateScope();
