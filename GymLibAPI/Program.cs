@@ -1,4 +1,5 @@
 using GymLibAPI.Data;
+using GymLibAPI.Infrastructure;
 using GymLibAPI.Models.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -6,30 +7,9 @@ using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddControllers().AddNewtonsoftJson();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-    {
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey
-    });
-    options.OperationFilter<SecurityRequirementsOperationFilter>();
-});
-
-builder.Services.AddDbContext<ApiContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-
-builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<UserEntity>()
-    .AddEntityFrameworkStores<ApiContext>();
-builder.Services.AddRouting(options => options.LowercaseUrls = true);
+DbInjector.Inject(builder);
+BaseAppServiceInjector.Inject(builder.Services);
+ServiceInjector.Inject(builder.Services);
 
 var app = builder.Build();
 
@@ -52,4 +32,6 @@ app.UseEndpoints(endpoints =>
 
 app.MapIdentityApi<UserEntity>();
 app.UseHttpsRedirection();
+using var scope = app.Services.CreateScope();
+ApiContextInitializer.Init(scope.ServiceProvider);
 app.Run();
