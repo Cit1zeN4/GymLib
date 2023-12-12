@@ -1,7 +1,12 @@
 using System.Security.Claims;
 using GymLibAPI.Data;
 using GymLibAPI.Infrastructure;
+using GymLibAPI.Models;
+using GymLibAPI.Models.Exercise;
+using GymLibAPI.Models.Exercise.Request;
 using GymLibAPI.Models.User;
+using GymLibAPI.Models.User.Dto;
+using GymLibAPI.Models.User.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +18,44 @@ namespace GymLibAPI.Controllers;
 [Route("[controller]")]
 public class UserController(IServiceScopeFactory serviceScopeFactory) : Controller
 {
+    [HttpPost("list")]
+    public async Task<ActionResult> GetUserList([FromBody] UserListRequest request)
+    {
+        using var scope = serviceScopeFactory.CreateScope();
+        await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
+
+        var query = context.Users.Select(x => new UserShortDto(x));
+
+        if (!string.IsNullOrEmpty(request.Search))
+            query = query.Where(x => x.UserName.Contains(request.Search));
+
+        var totalCount = await query.CountAsync();
+
+        query = request.OrderBy switch
+        {
+            UserOrderByType.Id => request.OrderDirection == OrderDirectionType.ASC
+                ? query.OrderBy(x => x.Id)
+                : query.OrderByDescending(x => x.Id),
+            UserOrderByType.Name => request.OrderDirection == OrderDirectionType.ASC
+                ? query.OrderBy(x => x.UserName)
+                : query.OrderByDescending(x => x.UserName),
+            _ => query
+        };
+
+        query = query.Skip(request.Skip);
+        if (request.Take > 0)
+            query = query.Take(request.Take);
+
+        var list = await query.ToListAsync();
+        var response = new ResponseData<UserShortDto>
+        {
+            TotalCount = totalCount,
+            Records = list
+        };
+
+        return Ok(response);
+    }
+    
     [Authorize]
     [HttpPost("follow")]
     public async Task<ActionResult<string>> Follow(int userId)
