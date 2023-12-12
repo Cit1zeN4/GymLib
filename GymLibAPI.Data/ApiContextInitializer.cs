@@ -60,7 +60,7 @@ public static class ApiContextInitializer
                     Encoding = Encoding.UTF8,
                     Delimiter = ","
                 };
-                
+
                 CsvReader csvReader = new CsvReader(reader, config);
                 var exercises = csvReader.GetRecords<ExerciseEntity>().ToArray();
                 context.Exercise.AddRange(exercises);

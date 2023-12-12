@@ -15,7 +15,10 @@ public class ApiContext : IdentityDbContext<UserEntity, RoleEntity, int>
 {
     public ApiContext(DbContextOptions<ApiContext> options) : base(options)
     {
-        Database.Migrate();
+        if (Database.IsRelational())
+        {
+            Database.Migrate();
+        }
     }
     
     public DbSet<ExerciseEntity> Exercise { get; set; }

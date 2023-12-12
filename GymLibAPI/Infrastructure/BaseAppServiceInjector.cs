@@ -11,7 +11,9 @@ public static class BaseAppServiceInjector
     {
         // Add services to the container.
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        services.AddControllers().AddNewtonsoftJson();
+        services.AddControllers(options =>
+        {
+        }).AddNewtonsoftJson();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {

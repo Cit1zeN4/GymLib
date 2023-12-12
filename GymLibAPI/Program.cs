@@ -1,9 +1,6 @@
 using GymLibAPI.Data;
 using GymLibAPI.Infrastructure;
 using GymLibAPI.Models.User;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,3 +32,5 @@ app.UseHttpsRedirection();
 using var scope = app.Services.CreateScope();
 ApiContextInitializer.Init(scope.ServiceProvider);
 app.Run();
+
+public partial class Program { }

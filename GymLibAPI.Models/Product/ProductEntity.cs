@@ -1,3 +1,4 @@
+using System.Globalization;
 using GymLibAPI.Models.Food;
 
 namespace GymLibAPI.Models.Product;
@@ -17,7 +18,7 @@ public class ProductEntity
             Name = entity.Name;
             var splited = entity.Bgu
                 .Split(",")
-                .Select(x => Convert.ToSingle(x))
+                .Select(x => Convert.ToSingle(x, CultureInfo.InvariantCulture))
                 .ToArray();
             Proteins = splited[0];
             Fats = splited[1];
