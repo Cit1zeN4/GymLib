@@ -19,7 +19,7 @@ namespace GymLibAPI.Controllers;
 public class UserController(IServiceScopeFactory serviceScopeFactory) : Controller
 {
     [HttpPost("list")]
-    public async Task<ActionResult> GetUserList([FromBody] UserListRequest request)
+    public async Task<ActionResult<ResponseData<UserShortDto>>> GetUserList([FromBody] UserListRequest request)
     {
         using var scope = serviceScopeFactory.CreateScope();
         await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
