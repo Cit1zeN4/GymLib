@@ -103,4 +103,40 @@ public class UserController(IServiceScopeFactory serviceScopeFactory) : Controll
         await context.SaveChangesAsync();
         return Ok();
     }
+
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<ActionResult<UserShortDto>> GetMe()
+    {
+        using var scope = serviceScopeFactory.CreateScope();
+        await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
+        var userId = User.GetUserId();
+        
+        var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        if (user == null)
+            return BadRequest($"Пользователь с Id {userId} не найден");
+
+        var response = new UserShortDto(user);
+        return Ok(response);
+    }
+
+    [Authorize]
+    [HttpPut("me")]
+    public async Task<ActionResult<UserShortDto>> UpdateMe(string newName)
+    {
+        using var scope = serviceScopeFactory.CreateScope();
+        await using var context = scope.ServiceProvider.GetRequiredService<ApiContext>();
+        var userId = User.GetUserId();
+
+        var user = await context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        if (user == null)
+            return BadRequest($"Пользователь с Id {userId} не найден");
+        
+        user.UserName = newName;
+        user.NormalizedUserName = newName;
+
+        await context.SaveChangesAsync();
+        var response = new UserShortDto(user);
+        return Ok(response);
+    }
 }
